@@ -7,7 +7,7 @@ let gallery = new SimpleLightbox('.gallery a', {
   captionDelay: 250,
 });
 export default function renderUser(users) {
-  const markup = users.data.hits
+  const markup = users.hits
     .map(user => {
       return `<li class="list__item">
                 <div class="gallery">

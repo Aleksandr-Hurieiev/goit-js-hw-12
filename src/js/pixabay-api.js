@@ -1,19 +1,27 @@
+// pixabay.js
 import axios from 'axios';
-import { page } from "../main";
-export default async function makeRequest(userInput) {
-  axios.defaults.baseURL = 'https://pixabay.com/api/?';
-  const searchParams = new URLSearchParams({
-    key: '44460301-2102a6dd6fc86b62b9707eae5',
-    image_type: 'photo',
-    orientation: 'horizontal',
-    safesearch: true,
-    per_page: 12,
-    limit: 40,
-  });
 
-  // -------------------------------
+export default async function makeRequest(data) {
+  const { key, q, image_type, orientation, safesearch, per_page } = data;
+
   try {
-    const response = await axios.get(`&q=${userInput}&${searchParams}&${page}`);
-    return response;
-  } catch (error) {}
+    const response = await axios.get('https://pixabay.com/api/', {
+      params: {
+        key,
+        q,
+        image_type,
+        orientation,
+        safesearch,
+        per_page
+      }
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+
+    return response.data;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 }
