@@ -2,17 +2,16 @@ import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
 export const list = document.querySelector('#list-js');
-let gallery = new SimpleLightbox('.gallery a', {
+let gallery = new SimpleLightbox('.list__item a', {
   captionsData: 'alt',
   captionDelay: 250,
 });
 export default function renderUser(users) {
   const markup = users.hits
     .map(user => {
-      return `<li class="list__item">
-                <div class="gallery">
-          <a href="${user.webformatURL}"><img class="list__img" src="${user.webformatURL}" alt="${user.user}"</a>
-      </div>
+      return `<div class="gallery">
+      <li class="list__item">        
+          <a href="${user.webformatURL}"><img class="list__img" src="${user.webformatURL}" alt="${user.user}"</a>      
     <ul class="item__list">
       <li class="item__list-item">
         <h3 class="item__list-title">Likes</h3>
@@ -31,7 +30,8 @@ export default function renderUser(users) {
         <p class="item__list-text">${user.downloads}</p>
       </li>
     </ul>
-  </li>`;
+  </li>
+  </div>`;
     })
     .join('');
   list.insertAdjacentHTML('beforeend', markup);
