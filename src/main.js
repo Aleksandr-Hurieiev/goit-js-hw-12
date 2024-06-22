@@ -12,24 +12,27 @@ const param = {
   safesearch: true,
   per_page: 12,
 };
-export let page = 1;
+
 // Контролює кількість елементів в групі
 // Кількість груп в колекції
-const totalPages = Math.ceil(50 / param.per_page);
 const form = document.querySelector('.form_js');
 const loader = document.querySelector('#loader');
 const formButton = document.querySelector('.form__button');
 const formInput = document.querySelector('.form__input');
 const loadMore = document.querySelector('.button-js');
-
 form.addEventListener('submit', createData);
+//====================================================================
+export let page = 1;
+let totalPages = 0;
 
 async function createData(event) {
   event.preventDefault();
-  page = 1;
+  loadMore.classList.add('isActive');
   list.innerHTML = '';
   const search = event.target[0].value.trim();
   param.q = search;
+  page = 1;
+  totalPages = 0;
   if (!search) {
     event.target[0].value = '';
     return iziToast.warning({
@@ -48,11 +51,21 @@ async function createData(event) {
           'Sorry, there are no images matching your search query. Please try again!',
       });
     } else {
+      totalPages = Math.ceil(users.totalHits / param.per_page);
       toggleLoading(true);
       setTimeout(() => {
         renderUser(users);
-        loadMore.classList.remove('isActive');
         toggleLoading(false);
+        if (users.totalHits < 12) {
+          loadMore.classList.add('isActive');
+          iziToast.error({
+            title: 'Sorry',
+            message:
+              "We're sorry, but you've reached the end of search results.",
+          });
+          return;
+        }
+        loadMore.classList.remove('isActive');
       }, 500);
     }
   } catch (error) {
@@ -68,16 +81,13 @@ async function createData(event) {
 //=========================================================================================================================================
 loadMore.addEventListener('click', async () => {
   page += 1;
-  console.log(totalPages);
-
   try {
     const moreUser = await makeRequest(param, page);
     toggleLoading(true);
-
     setTimeout(() => {
       renderUser(moreUser);
       toggleLoading(false);
-      smoothScroll()
+      smoothScroll();
     }, 500);
 
     if (page < totalPages) {
@@ -94,7 +104,7 @@ loadMore.addEventListener('click', async () => {
 function smoothScroll() {
   const { height: cardHeight } = list.firstElementChild.getBoundingClientRect();
   window.scrollBy({
-    top: cardHeight * 2,
+    top: cardHeight * 2.5,
     behavior: 'smooth',
   });
 }
